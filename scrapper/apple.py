@@ -1,6 +1,6 @@
 from utils.enums import ScrollEnum
 from utils.context_csv import CSVCustom
-from scrapper.base_review import BaseReviewScrapper
+from scrapper.base import BaseReviewScrapper
 
 
 class AppleReviewScrapper(BaseReviewScrapper):
@@ -14,6 +14,14 @@ class AppleReviewScrapper(BaseReviewScrapper):
     DESCRIPTIONS_XPATH = r'/html/body/div[4]/div/main/div/div/div/section/div[2]/div[{}]/div[2]/blockquote/div'
 
     def run(self, n: int, output_file: str):
+        """ Execute the scrapper and save all data in a csv file
+
+        :param n: how many data to be extracted
+            :type: int
+        :param output_file: csv file path where data will be saved
+            :type: str
+        """
+
         with self.driver as web:
             web.get(self.url)
 
