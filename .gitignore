@@ -132,4 +132,7 @@ dmypy.json
 .idea/
 
 # VScode folder
-.code/
+.code
+
+# loggins
+*.logs
