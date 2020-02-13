@@ -1,6 +1,7 @@
 from utils.enums import ScrollEnum
 from utils.context_csv import CSVCustom
 from scrapper.base import BaseReviewScrapper
+from logs import default_logger
 
 
 class AppleReviewScrapper(BaseReviewScrapper):
@@ -26,9 +27,10 @@ class AppleReviewScrapper(BaseReviewScrapper):
             web.get(self.url)
 
             with CSVCustom(output_file, ['name', 'date', 'title', 'star', 'description']) as csv:
-
+                n_length = len(str(n))
                 not_found = 0
                 for i in range(1, n + 1):
+                    default_logger.debug(f'getting: {str(i).rjust(n_length, "0")}')
                     # find card element
                     if web.wait_find_element_by_xpath(self.CARD_XPATH.format(i)):
                         # resetting not_found counter
@@ -45,6 +47,7 @@ class AppleReviewScrapper(BaseReviewScrapper):
                         # saving to csv file
                         csv.write_row(data)
                     else:
+                        default_logger.warning(f'not found the element: {not_found}')
                         # scroll the page up to unsure that the page will load more data
                         web.scroll_page('/html', ScrollEnum.UP)
                         # increment 1
@@ -56,3 +59,7 @@ class AppleReviewScrapper(BaseReviewScrapper):
 
                     # scroll down the page to load more data
                     web.scroll_page('/html', ScrollEnum.DOWN)
+                else:
+                    default_logger.debug(f'ended with {i} elements')
+                    return
+                default_logger.error(f'ended with no more element found')

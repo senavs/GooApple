@@ -1,6 +1,7 @@
 from utils.enums import ScrollEnum
 from utils.context_csv import CSVCustom
 from scrapper.base import BaseReviewScrapper
+from logs import default_logger
 
 
 class GoogleReviewScrapper(BaseReviewScrapper):
@@ -28,10 +29,10 @@ class GoogleReviewScrapper(BaseReviewScrapper):
             web.get(self.url)
 
             with CSVCustom(output_file, ['name', 'date', 'star', 'description']) as csv:
-
+                n_length = len(str(n))
                 not_found = 0
                 for i in range(1, n + 1):
-                    print(i)
+                    default_logger.debug(f'getting: {str(i).rjust(n_length, "0")}')
                     # not found 5 time in a row the READ MORE element
                     if not_found == 5:
                         break
@@ -52,12 +53,18 @@ class GoogleReviewScrapper(BaseReviewScrapper):
                         # saving to file
                         csv.write_row(data)
                     else:
+                        default_logger.warning(f'not found the element: {not_found}')
                         # increment 1 to not_found to break the loop the is the end
                         not_found += 1
                         # clicking to the button read more to load more data
                         read_more = web.find_element_by_xpath(self.READ_MORE_XPATH)
                         if read_more:
+                            default_logger.debug(f'getting more data')
                             web.js_command('.click()', read_more)
 
                     # scrolling the page down
                     web.scroll_page('/html', ScrollEnum.DOWN)
+                else:
+                    default_logger.debug(f'ended with {i} elements')
+                    return
+                default_logger.error(f'ended with no more element found')
