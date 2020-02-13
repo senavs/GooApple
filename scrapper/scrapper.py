@@ -72,7 +72,6 @@ class Scrapper:
         else:
             return element
 
-
     def wait_find_element_by_xpath(self, xpath: str) -> Union[WebElement, None]:
         """Wait and find the element
 
@@ -104,3 +103,14 @@ class Scrapper:
                 element.send_keys(Keys.HOME)
             elif direction == ScrollEnum.DOWN:
                 element.send_keys(Keys.END)
+
+    def js_command(self, command: str, element: WebElement):
+        """Execute JavaScript command in an element
+
+        :param command: js command
+            :type: str
+        :param element: element which will be apply the command
+             :type: WebElement
+        """
+
+        self.driver.execute_script('arguments[0]' + command, element)
